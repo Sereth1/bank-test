@@ -8,6 +8,7 @@ const Header = () => {
     const [navOpen, setNavOpen] = useState(false);
     const { openModal } = useModal();
 
+
     const toggleNav = () => setNavOpen(!navOpen);
 
     return (
@@ -44,7 +45,7 @@ const Header = () => {
                     </a>
                 </nav>
 
-                <div className="hidden md:flex items-center space-x-4 ml-auto pl-10 mr-72">
+                <div className="hidden md:flex items-center space-x-4 ml-auto pl-10 mr-72 z-50">
                     <Button label="Log in" variant="secondary" onClick={() => openModal('login')} />
                     <Button label="Sign up" variant="primary" onClick={() => openModal('register')} />
                 </div>
