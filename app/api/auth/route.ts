@@ -1,14 +1,18 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextResponse } from 'next/server';
-import pool from '@/utils/database'; // Your database connection
+import pool from '@/utils/database';
 import crypto from 'crypto';
+import { RowDataPacket } from 'mysql2'; // Import RowDataPacket type
+
+// Define an interface for the expected result structure
+interface User extends RowDataPacket {
+    id: string;
+    password_hash: string;
+}
 
 export async function POST(request: Request) {
     try {
-        // Parse request body
         const { email, password } = await request.json();
 
-        // Perform input validation
         if (!email || !password) {
             return NextResponse.json(
                 { message: 'Email and password are required' },
@@ -16,8 +20,8 @@ export async function POST(request: Request) {
             );
         }
 
-        // Check if the user exists
-        const user = await new Promise<any>((resolve, reject) => {
+        // Query the database
+        const user = await new Promise<User | null>((resolve, reject) => {
             pool.query(
                 'SELECT id, password_hash FROM users WHERE email = ?',
                 [email],
@@ -26,7 +30,9 @@ export async function POST(request: Request) {
                         console.error('Database error:', error);
                         reject(error);
                     } else {
-                        resolve(results[0]);
+                        // Type assertion to cast results to User[]
+                        const users = results as User[];
+                        resolve(users.length > 0 ? users[0] : null);
                     }
                 }
             );
