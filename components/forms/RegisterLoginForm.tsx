@@ -23,12 +23,13 @@ const RegisterLoginForm = () => {
     const { register, loading: registerLoading, error: registerError } = useRegister();
     const { login, loading: loginLoading, error: loginError } = useLogin();
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         setFormData({
             ...formData,
             [e.target.name]: e.target.value,
         });
     };
+
 
     // Handle form submission
     const handleSubmit = (e: React.FormEvent) => {
@@ -72,15 +73,7 @@ const RegisterLoginForm = () => {
 
     return (
         <div>
-            {/* Trigger buttons */}
-            <button onClick={() => openModal('login')} className="bg-black text-white px-4 py-2 rounded mr-2">
-                Open Login
-            </button>
-            <button onClick={() => openModal('register')} className="bg-black text-white px-4 py-2 rounded">
-                Open Register
-            </button>
 
-            {/* Modal */}
             {isModalOpen && (
                 <>
                     <div
@@ -206,13 +199,18 @@ const RegisterLoginForm = () => {
                                     </div>
                                     <div>
                                         <label className="block mb-1 text-gray-700">Account Type</label>
-                                        <input
-                                            type="text"
+                                        <select
+                                            onChange={handleChange}
                                             name="accountType"
                                             value={formData.accountType}
-                                            onChange={handleChange}
                                             className="w-full border rounded p-2 focus:outline-none focus:border-blue-500"
-                                        />
+                                        >
+
+                                            <option value="Investment">Investment</option>
+                                            <option value="Business">Business</option>
+                                            <option value="Savings">Savings</option>
+                                            <option value="Checking">Checking</option>
+                                        </select>
                                     </div>
                                     <button
                                         type="submit"
