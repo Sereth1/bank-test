@@ -16,7 +16,7 @@ const Header = () => {
                     StarBank
                 </div>
 
-                {/* Desktop Navigation Links */}
+
                 <nav className="hidden md:flex items-center space-x-6 text-gray-300 text-lg ml-10">
                     <a
                         href="#personal"
@@ -44,13 +44,12 @@ const Header = () => {
                     </a>
                 </nav>
 
-                {/* Buttons */}
                 <div className="hidden md:flex items-center space-x-4 ml-auto pl-10 mr-72">
                     <Button label="Log in" variant="secondary" />
                     <Button label="Sign up" variant="primary" />
                 </div>
 
-                {/* Mobile Menu Button */}
+
                 <div className="md:hidden">
                     <button
                         onClick={toggleNav}
@@ -66,7 +65,7 @@ const Header = () => {
                 </div>
             </div>
 
-            {/* Mobile Navigation Menu */}
+
             {navOpen && (
                 <nav className="md:hidden bg-blue-800 text-gray-200 text-lg text-center">
                     <div className="flex flex-col space-y-4 px-4 py-4">
