@@ -2,14 +2,15 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useModal } from '@/context/ModalProvider';
 import { gsap } from 'gsap';
-import useRegister from '@/hooks/useRegister'; // Import the hook
+import useRegister from '@/hooks/useRegister';
+import useLogin from '@/hooks/useLogin';
 
 const RegisterLoginForm = () => {
     const { isModalOpen, activeTab, openModal, closeModal, setActiveTab } = useModal();
     const modalRef = useRef<HTMLDivElement>(null);
     const backdropRef = useRef<HTMLDivElement>(null);
 
-    // Form data state for register form
+    // Form data state
     const [formData, setFormData] = useState({
         username: '',
         email: '',
@@ -19,10 +20,9 @@ const RegisterLoginForm = () => {
         accountType: ''
     });
 
-    // Using the custom hook for registration
-    const { register, loading, error } = useRegister();
+    const { register, loading: registerLoading, error: registerError } = useRegister();
+    const { login, loading: loginLoading, error: loginError } = useLogin();
 
-    // Handle input changes
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({
             ...formData,
@@ -34,10 +34,10 @@ const RegisterLoginForm = () => {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (activeTab === 'register') {
-            // Call the register function from the hook
             register(formData);
+        } else if (activeTab === 'login') {
+            login(formData.email, formData.password);
         }
-        // Add logic for login if needed
     };
 
     useEffect(() => {
@@ -117,6 +117,40 @@ const RegisterLoginForm = () => {
                                 </button>
                             </div>
 
+                            {/* Login Form */}
+                            {activeTab === 'login' && (
+                                <form className="space-y-4" onSubmit={handleSubmit}>
+                                    <div>
+                                        <label className="block mb-1 text-gray-700">Email</label>
+                                        <input
+                                            type="email"
+                                            name="email"
+                                            value={formData.email}
+                                            onChange={handleChange}
+                                            className="w-full border rounded p-2 focus:outline-none focus:border-blue-500"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block mb-1 text-gray-700">Password</label>
+                                        <input
+                                            type="password"
+                                            name="password"
+                                            value={formData.password}
+                                            onChange={handleChange}
+                                            className="w-full border rounded p-2 focus:outline-none focus:border-blue-500"
+                                        />
+                                    </div>
+                                    <button
+                                        type="submit"
+                                        className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition duration-300"
+                                        disabled={loginLoading}
+                                    >
+                                        {loginLoading ? 'Logging in...' : 'Login'}
+                                    </button>
+                                    {loginError && <p className="text-red-500">{loginError}</p>}
+                                </form>
+                            )}
+
                             {/* Register Form */}
                             {activeTab === 'register' && (
                                 <form className="space-y-4" onSubmit={handleSubmit}>
@@ -183,11 +217,11 @@ const RegisterLoginForm = () => {
                                     <button
                                         type="submit"
                                         className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition duration-300"
-                                        disabled={loading}
+                                        disabled={registerLoading}
                                     >
-                                        {loading ? 'Registering...' : 'Register'}
+                                        {registerLoading ? 'Registering...' : 'Register'}
                                     </button>
-                                    {error && <p className="text-red-500">{error}</p>}
+                                    {registerError && <p className="text-red-500">{registerError}</p>}
                                 </form>
                             )}
                         </div>

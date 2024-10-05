@@ -1,9 +1,8 @@
 import { NextResponse } from 'next/server';
 import pool from '@/utils/database';
 import crypto from 'crypto';
-import { RowDataPacket } from 'mysql2'; // Import RowDataPacket type
+import { RowDataPacket } from 'mysql2';
 
-// Define an interface for the expected result structure
 interface User extends RowDataPacket {
     id: string;
     password_hash: string;
@@ -20,7 +19,6 @@ export async function POST(request: Request) {
             );
         }
 
-        // Query the database
         const user = await new Promise<User | null>((resolve, reject) => {
             pool.query(
                 'SELECT id, password_hash FROM users WHERE email = ?',
@@ -30,7 +28,6 @@ export async function POST(request: Request) {
                         console.error('Database error:', error);
                         reject(error);
                     } else {
-                        // Type assertion to cast results to User[]
                         const users = results as User[];
                         resolve(users.length > 0 ? users[0] : null);
                     }
