@@ -82,7 +82,7 @@ const HeroSection = () => {
                 ref={newTextRef}
                 className="absolute inset-0 flex items-center justify-center opacity-0"
             >
-                <h2 className="text-4xl font-semibold text-gray-800">Welcome to Your New Financial Journey</h2>
+                <h2 className="text-4xl text-center font-semibold text-gray-800">Welcome to Your New Financial Journey</h2>
             </div>
         </section>
     );
