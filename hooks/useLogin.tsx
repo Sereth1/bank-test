@@ -9,7 +9,7 @@ const useLogin = () => {
         setLoading(true);
         setError(null);
         try {
-            const response = await axios.post('/api/login', { email, password });
+            const response = await axios.post('/api/auth', { email, password });
             console.log('Login successful:', response.data);
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (err: any) {
