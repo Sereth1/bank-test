@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import pool from '@/utils/database';
 import { NextResponse } from 'next/server';
 import { RowDataPacket } from 'mysql2';
@@ -11,7 +12,7 @@ interface Account extends RowDataPacket {
     created_at: string;
     updated_at: string;
 }
-export const dynamic = "force-dynamic";
+
 
 export async function GET(request: Request) {
     try {
