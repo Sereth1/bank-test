@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { NextResponse } from 'next/server';
 import pool from '@/utils/database';
 import { generateAccountNumber, generateIban, hashPassword } from '@/utilities/generateFunctions';

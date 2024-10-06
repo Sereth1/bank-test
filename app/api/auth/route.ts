@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import pool from '@/utils/database';
 import crypto from 'crypto';
 import { RowDataPacket } from 'mysql2';
-
+export const dynamic = "force-dynamic";
 interface User extends RowDataPacket {
     id: string;
     username: string;
