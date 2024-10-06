@@ -5,6 +5,8 @@ import { RowDataPacket } from 'mysql2';
 
 interface User extends RowDataPacket {
     id: string;
+    username: string;
+    email: string;
     password_hash: string;
 }
 
@@ -21,7 +23,7 @@ export async function POST(request: Request) {
 
         const user = await new Promise<User | null>((resolve, reject) => {
             pool.query(
-                'SELECT id, password_hash FROM users WHERE email = ?',
+                'SELECT id, username, email, password_hash FROM accounts WHERE email = ?',
                 [email],
                 (error, results) => {
                     if (error) {
@@ -51,7 +53,12 @@ export async function POST(request: Request) {
         }
 
         return NextResponse.json(
-            { message: 'Login successful', userId: user.id },
+            {
+                message: 'Login successful',
+                userId: user.id,
+                username: user.username,
+                email: user.email
+            },
             { status: 200 }
         );
     } catch (error) {

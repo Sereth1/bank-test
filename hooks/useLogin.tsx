@@ -1,17 +1,25 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from 'react';
 import axios from 'axios';
-
+import { useLoggedIn } from '@/context/LoggedInProvider';
 const useLogin = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const { logIn } = useLoggedIn();
 
-    const login = async (email: string, password: string) => {
+    const login = async (email: string, password: string, id: string) => {
         setLoading(true);
         setError(null);
         try {
-            const response = await axios.post('/api/auth', { email, password });
+            const response = await axios.post('/api/auth', { email, password, id });
+
+            if (response.status === 200) {
+                const { username, email, id } = response.data;
+
+                logIn({ username, email, id });
+            }
+
             console.log('Login successful:', response.data);
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (err: any) {
             if (axios.isAxiosError(err)) {
                 setError(err.response?.data.message || 'Login failed');

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import pool from '@/utils/database';
-import crypto from 'crypto';
+import { generateAccountNumber, generateIban, hashPassword } from '@/utilities/generateFunctions';
 
 export async function POST(request: Request) {
     const connection = await pool.promise().getConnection(); // Use promise-based connection
@@ -33,15 +33,13 @@ export async function POST(request: Request) {
         }
 
         // Generate unique ID for the account
-        const accountId = crypto.randomUUID().replace(/-/g, '').slice(0, 36); // Create a 36-char UUID for the account
+        const accountId = crypto.randomUUID().replace(/-/g, '').slice(0, 36);
 
         // Hash the password
         const passwordHash = hashPassword(password);
 
-        // Ensure accountType is not null or provide a default value
         const finalAccountType = accountType || 'Default';
 
-        // Insert the new account with generated IBAN
         await connection.query(
             `INSERT INTO accounts 
             (id, username, email, password_hash, name, surname, account_number, iban, account_type, balance) 
@@ -52,7 +50,6 @@ export async function POST(request: Request) {
             ]
         );
 
-        // Commit the transaction
         await connection.commit();
         connection.release();
 
@@ -62,7 +59,6 @@ export async function POST(request: Request) {
         );
     } catch (error) {
         console.error('Registration error:', error);
-        // Roll back the transaction in case of an error
         await connection.rollback();
         connection.release();
         return NextResponse.json(
@@ -72,28 +68,8 @@ export async function POST(request: Request) {
     }
 }
 
-// Helper function to hash passwords
-function hashPassword(password: string): string {
-    const hash = crypto.createHash('sha256');
-    hash.update(password);
-    return hash.digest('hex');
-}
 
-// Helper function to generate an IBAN
-function generateIban(): string {
-    const countryCode = "DE"; // Example: Germany
-    const bankCode = "12345678"; // Mock bank identifier
-    const checkDigits = Math.floor(10 + Math.random() * 90).toString(); // 2-digit check digits
-    const accountNumber = Math.floor(1000000000 + Math.random() * 9000000000).toString(); // Unique 10-digit account number
-    return `${countryCode}${checkDigits}${bankCode}${accountNumber}`;
-}
 
-// Helper function to generate an account number
-function generateAccountNumber(): string {
-    return `ACC-${Math.floor(1000000000 + Math.random() * 9000000000)}`;
-}
-
-// Custom input validation function
 function validateInput(data: {
     username: string;
     email: string;
@@ -105,7 +81,7 @@ function validateInput(data: {
     if (!data.username || data.username.length > 50) {
         return 'Username is required and must be at most 50 characters';
     }
-    if (!data.email || data.email.length > 100 || !validateEmail(data.email)) {
+    if (!data.email || data.email.length > 100) {
         return 'A valid email is required and must be at most 100 characters';
     }
     if (!data.password || data.password.length < 8 || data.password.length > 255) {
@@ -124,8 +100,7 @@ function validateInput(data: {
 }
 
 
-// Simple email validation function
-function validateEmail(email: string): boolean {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-}
+// function validateEmail(email: string): boolean {
+//     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+//     return emailRegex.test(email);
+// }

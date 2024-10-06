@@ -6,7 +6,7 @@ import useRegister from '@/hooks/useRegister';
 import useLogin from '@/hooks/useLogin';
 
 const RegisterLoginForm = () => {
-    const { isModalOpen, activeTab, openModal, closeModal, setActiveTab } = useModal();
+    const { isModalOpen, activeTab, closeModal, setActiveTab } = useModal();
     const modalRef = useRef<HTMLDivElement>(null);
     const backdropRef = useRef<HTMLDivElement>(null);
 
@@ -30,14 +30,14 @@ const RegisterLoginForm = () => {
         });
     };
 
-
     // Handle form submission
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (activeTab === 'register') {
             register(formData);
         } else if (activeTab === 'login') {
-            login(formData.email, formData.password);
+            await login(formData.email, formData.password, '');
+            closeModal(); // Close the modal after a successful login
         }
     };
 
@@ -143,68 +143,68 @@ const RegisterLoginForm = () => {
                                     {loginError && <p className="text-red-500">{loginError}</p>}
                                 </form>
                             )}
-
                             {/* Register Form */}
                             {activeTab === 'register' && (
                                 <form className="space-y-4" onSubmit={handleSubmit}>
                                     <div>
-                                        <label className="block mb-1 text-gray-700">Username</label>
+                                        <label className="block mb-1 text-black">Username</label>
                                         <input
                                             type="text"
                                             name="username"
                                             value={formData.username}
                                             onChange={handleChange}
-                                            className="w-full border rounded p-2 focus:outline-none focus:border-blue-500"
+                                            className="w-full border rounded p-2 focus:outline-none text-black focus:border-blue-500"
                                         />
                                     </div>
                                     <div>
-                                        <label className="block mb-1 text-gray-700">Email</label>
+                                        <label className="block mb-1 text-black">Email</label>
                                         <input
                                             type="email"
                                             name="email"
                                             value={formData.email}
                                             onChange={handleChange}
-                                            className="w-full border rounded p-2 focus:outline-none focus:border-blue-500"
+                                            className="w-full border rounded p-2 focus:outline-none text-black focus:border-blue-500"
                                         />
                                     </div>
                                     <div>
-                                        <label className="block mb-1 text-gray-700">Password</label>
+                                        <label className="block mb-1 text-black">Password</label>
                                         <input
                                             type="password"
                                             name="password"
                                             value={formData.password}
                                             onChange={handleChange}
-                                            className="w-full border rounded p-2 focus:outline-none focus:border-blue-500"
+                                            className="w-full border rounded p-2 focus:outline-none text-black focus:border-blue-500"
                                         />
                                     </div>
                                     <div>
-                                        <label className="block mb-1 text-gray-700">Name</label>
+                                        <label className="block mb-1 text-black">Name</label>
                                         <input
                                             type="text"
                                             name="name"
                                             value={formData.name}
                                             onChange={handleChange}
-                                            className="w-full border rounded p-2 focus:outline-none focus:border-blue-500"
+                                            className="w-full border rounded p-2 focus:outline-none text-black text-black focus:border-blue-500"
                                         />
                                     </div>
                                     <div>
-                                        <label className="block mb-1 text-gray-700">Surname</label>
+                                        <label className="block mb-1 text-black">Surname</label>
                                         <input
                                             type="text"
                                             name="surname"
                                             value={formData.surname}
                                             onChange={handleChange}
-                                            className="w-full border rounded p-2 focus:outline-none focus:border-blue-500"
+                                            className="w-full border rounded p-2 focus:outline-none text-black focus:border-blue-500"
                                         />
                                     </div>
                                     <div>
-                                        <label className="block mb-1 text-gray-700">Account Type</label>
+                                        <label className="block mb-1 text-black">Account Type</label>
                                         <select
                                             onChange={handleChange}
                                             name="accountType"
                                             value={formData.accountType}
-                                            className="w-full border rounded p-2 focus:outline-none focus:border-blue-500"
+                                            className="w-full border rounded p-2 focus:outline-none text-black focus:border-blue-500"
                                         >
+                                            <option value=""></option>
 
                                             <option value="Investment">Investment</option>
                                             <option value="Business">Business</option>

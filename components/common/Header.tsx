@@ -1,18 +1,22 @@
 'use client';
+import { useLoggedIn } from '@/context/LoggedInProvider';
+import { useModal } from '@/context/ModalProvider';
 import { MenuIcon, XIcon } from 'lucide-react';
 import { useState } from 'react';
-import { useModal } from '@/context/ModalProvider';
 import Button from './Button';
 
 const Header = () => {
     const [navOpen, setNavOpen] = useState(false);
     const { openModal } = useModal();
+    const { user, logOut } = useLoggedIn()
+
 
 
     const toggleNav = () => setNavOpen(!navOpen);
 
     return (
         <header className="fixed top-0 w-full z-50 bg-gradient-to-r pt-10 pl-56">
+
             <div className="flex items-center justify-between px-4 md:px-8">
                 <div className="text-3xl font-semibold text-gray-200">
                     StarBank
@@ -48,6 +52,8 @@ const Header = () => {
                 <div className="hidden md:flex items-center space-x-4 ml-auto pl-10 mr-72 z-50">
                     <Button label="Log in" variant="secondary" onClick={() => openModal('login')} />
                     <Button label="Sign up" variant="primary" onClick={() => openModal('register')} />
+                    {user !== null && <button className='border  p-2 rounded-full' onClick={() => logOut()}>Log Out</button>}
+
                 </div>
 
                 <div className="md:hidden">
@@ -75,6 +81,7 @@ const Header = () => {
                         <div className="flex flex-col items-center mt-4 gap-2">
                             <Button label="Log in" variant="secondary" onClick={() => openModal('login')} />
                             <Button label="Sign up" variant="primary" onClick={() => openModal('register')} />
+                            {!user === null && <button className='border rounded p-2'>Log Out</button>}
                         </div>
                     </div>
                 </nav>

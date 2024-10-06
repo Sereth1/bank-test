@@ -4,6 +4,7 @@ import "./globals.css";
 import Header from "@/components/common/Header";
 import { ModalProvider } from "@/context/ModalProvider";
 import RegisterLoginForm from "@/components/forms/RegisterLoginForm";
+import { LoggedInProvider } from "@/context/LoggedInProvider";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -25,11 +26,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <ModalProvider>
-          <Header />
-          <RegisterLoginForm />
-          {children}
-        </ModalProvider>
+        <LoggedInProvider>
+
+          <ModalProvider>
+            <Header />
+            <RegisterLoginForm />
+            {children}
+          </ModalProvider>
+        </LoggedInProvider>
       </body>
     </html>
   );
