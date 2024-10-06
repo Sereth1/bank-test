@@ -44,7 +44,7 @@ export async function POST(request: Request) {
         const senderAccount = senderAccounts[0] as Account;
         let newSenderBalance = parseFloat(senderAccount.balance.toString());
 
-        // Handling Transfer
+        // Handle Transfer
         if (transactionType === 'Transfer') {
             if (!targetIban) {
                 await connection.rollback();
@@ -106,8 +106,46 @@ export async function POST(request: Request) {
                 [accountId, transactionType, formattedAmount, recipientAccount.id, description || '']
             );
 
-        } else {
-            // Handle Deposit or Withdrawal as in the previous example
+        } else if (transactionType === 'Deposit') {
+            // Handle Deposit
+            newSenderBalance += parseFloat(formattedAmount);
+
+            // Update the sender's balance
+            await connection.query(
+                'UPDATE accounts SET balance = ? WHERE id = ?',
+                [newSenderBalance.toFixed(2), accountId]
+            );
+
+            // Insert the deposit transaction
+            await connection.query(
+                'INSERT INTO transactions (account_id, transaction_type, amount, description) VALUES (?, ?, ?, ?)',
+                [accountId, transactionType, formattedAmount, description || '']
+            );
+
+        } else if (transactionType === 'Withdrawal') {
+            // Handle Withdrawal
+            if (parseFloat(formattedAmount) > newSenderBalance) {
+                await connection.rollback();
+                connection.release();
+                return NextResponse.json(
+                    { message: 'Insufficient balance' },
+                    { status: 400 }
+                );
+            }
+
+            newSenderBalance -= parseFloat(formattedAmount);
+
+            // Update the sender's balance
+            await connection.query(
+                'UPDATE accounts SET balance = ? WHERE id = ?',
+                [newSenderBalance.toFixed(2), accountId]
+            );
+
+            // Insert the withdrawal transaction
+            await connection.query(
+                'INSERT INTO transactions (account_id, transaction_type, amount, description) VALUES (?, ?, ?, ?)',
+                [accountId, transactionType, formattedAmount, description || '']
+            );
         }
 
         await connection.commit();

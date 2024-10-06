@@ -1,8 +1,9 @@
 'use client';
 import useFetchAccount from '@/hooks/useFetchAccount';
 import React from 'react';
+import dynamic from 'next/dynamic';
 
-export default function WelcomeHero() {
+const WelcomeHero = () => {
     const { accountData } = useFetchAccount();
 
     return (
@@ -26,4 +27,6 @@ export default function WelcomeHero() {
             </div>
         </div>
     );
-}
+};
+
+export default dynamic(() => Promise.resolve(WelcomeHero), { ssr: true });
