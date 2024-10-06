@@ -4,8 +4,9 @@ import useTransaction from '@/hooks/useTransaction';
 
 interface TransactionFormProps {
     transactionType: 'Deposit' | 'Withdrawal' | 'Transfer';
-    setMethod: (method: '' | 'Deposit' | 'Withdrawal' | 'Transfer') => void;
+    setMethod: React.Dispatch<React.SetStateAction<'Deposit' | 'Withdrawal' | 'Transfer' | ''>>;
 }
+
 
 const TransactionForm: React.FC<TransactionFormProps> = ({ transactionType, setMethod }) => {
     const [amount, setAmount] = useState<number>(0);

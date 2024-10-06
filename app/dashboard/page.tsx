@@ -1,19 +1,16 @@
-'use client'
-import TransactionsList from '@/components/common/TransactionsList';
-import Options from '@/components/dashboard/Options';
+'use client';
+import React, { useState } from 'react';
 import TransactionForm from '@/components/forms/TransactionForm';
-import { useState } from 'react';
+import Options from '@/components/dashboard/Options';
 
 export default function Page() {
-    const [method, setMethod] = useState<'Deposit' | 'Withdrawal' | 'Transfer' | null>(null); // Change initial state to `null`
-
-    console.log(method);
+    // Make sure this type matches everywhere
+    const [method, setMethod] = useState<'' | 'Deposit' | 'Withdrawal' | 'Transfer'>('');
 
     return (
         <div>
             <Options setMethod={setMethod} />
-            {method && <TransactionForm transactionType={method} setMethod={setMethod} />}
-            <TransactionsList />
+            {method !== '' && <TransactionForm transactionType={method} setMethod={setMethod} />}
         </div>
     );
 }

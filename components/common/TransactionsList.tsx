@@ -1,6 +1,6 @@
 'use client';
-import React, { use, useState } from 'react';
 import useFetchTransactions from '@/hooks/useFetchTransactions';
+import { useState } from 'react';
 
 const TransactionsList = () => {
     const { transactions, loading, error } = useFetchTransactions();
@@ -26,7 +26,6 @@ const TransactionsList = () => {
         return 0;
     });
 
-    // Calculate total pages
     const totalPages = Math.ceil(sortedTransactions.length / itemsPerPage);
 
     // Get current page transactions
@@ -82,7 +81,7 @@ const TransactionsList = () => {
                     <label className="block mb-1">Elements Per Page</label>
                     <select
                         value={itemsPerPage}
-                        onChange={(e) => setItemsPerPage(e.target.value)}
+                        onChange={(e) => setItemsPerPage(Number(e.target.value))}
                         className="border rounded p-2"
                     >
                         {Array.from({ length: 11 }).map((_, i) => (
