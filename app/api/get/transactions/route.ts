@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import pool from '@/utils/database';
 import { RowDataPacket } from 'mysql2';
+export const dynamic = "force-dynamic";
 
 export async function GET(request: Request) {
     const connection = await pool.promise().getConnection();

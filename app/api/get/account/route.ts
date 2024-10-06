@@ -11,6 +11,7 @@ interface Account extends RowDataPacket {
     created_at: string;
     updated_at: string;
 }
+export const dynamic = "force-dynamic";
 
 export async function GET(request: Request) {
     try {

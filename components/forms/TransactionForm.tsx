@@ -1,12 +1,13 @@
 'use client';
 import React, { useState } from 'react';
 import useTransaction from '@/hooks/useTransaction';
+import { AiOutlineClose } from 'react-icons/ai';
+import { FaMoneyBillWave, FaArrowRight, FaWallet } from 'react-icons/fa';
 
 interface TransactionFormProps {
     transactionType: 'Deposit' | 'Withdrawal' | 'Transfer';
     setMethod: React.Dispatch<React.SetStateAction<'Deposit' | 'Withdrawal' | 'Transfer' | ''>>;
 }
-
 
 const TransactionForm: React.FC<TransactionFormProps> = ({ transactionType, setMethod }) => {
     const [amount, setAmount] = useState<number>(0);
@@ -40,56 +41,71 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ transactionType, setM
     };
 
     return (
-        <div className="flex items-center justify-center pt-20">
-            <div className="p-10 border rounded-lg shadow-lg max-w-md w-full">
-                <div className="flex justify-between">
-                    <h2 className="text-xl mb-4 text-center">{transactionType}</h2>
-                    <button onClick={() => setMethod('')} className="text-red-500">X</button>
+        <div className="flex items-center justify-center py-20 px-4 bg-gray-50">
+            <div className="p-8 border rounded-lg shadow-lg max-w-lg w-full bg-white">
+                <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-2xl font-semibold text-gray-800">
+                        {transactionType === 'Deposit' && <FaMoneyBillWave className="inline mr-2" />}
+                        {transactionType === 'Withdrawal' && <FaWallet className="inline mr-2" />}
+                        {transactionType === 'Transfer' && <FaArrowRight className="inline mr-2" />}
+                        {transactionType}
+                    </h2>
+                    <button onClick={() => setMethod('')} className="text-gray-500 hover:text-red-500 transition duration-300">
+                        <AiOutlineClose size={24} />
+                    </button>
                 </div>
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <div>
-                        <label className="block mb-1 text-gray-700">Amount</label>
+                <form onSubmit={handleSubmit} className="space-y-6">
+                    <div className="flex flex-col bg-gray-100 p-4 rounded-md shadow-sm">
+                        <label className="mb-2 text-gray-700 font-medium">Amount</label>
                         <input
                             type="number"
                             name="amount"
                             value={amount}
                             onChange={(e) => setAmount(Number(e.target.value))}
-                            className="w-full border rounded p-2 focus:outline-none focus:border-blue-500"
+                            className="w-full border rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                            placeholder="Enter amount"
                             required
                         />
+                        <small className="text-gray-500 mt-2">Minimum amount: 1</small>
                     </div>
 
                     {transactionType === 'Transfer' && (
-                        <div>
-                            <label className="block mb-1 text-gray-700">Target IBAN</label>
+                        <div className="flex flex-col bg-gray-100 p-4 rounded-md shadow-sm">
+                            <label className="mb-2 text-gray-700 font-medium">Target IBAN</label>
                             <input
                                 type="text"
                                 name="targetIban"
                                 value={targetIban}
                                 onChange={(e) => setTargetIban(e.target.value)}
-                                className="w-full border rounded p-2 focus:outline-none focus:border-blue-500"
+                                className="w-full border rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                                placeholder="Enter target IBAN"
                                 required
                             />
+                            <small className="text-gray-500 mt-2">Ensure the IBAN is correctly formatted.</small>
                         </div>
                     )}
 
-                    <div>
-                        <label className="block mb-1 text-gray-700">Description</label>
+                    <div className="flex flex-col bg-gray-100 p-4 rounded-md shadow-sm">
+                        <label className="mb-2 text-gray-700 font-medium">Description</label>
                         <input
                             type="text"
                             name="description"
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
-                            className="w-full border rounded p-2 focus:outline-none focus:border-blue-500"
+                            className="w-full border rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                            placeholder="Optional description"
                         />
                     </div>
 
                     <button
                         type="submit"
-                        className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition duration-300"
+                        className={`w-full py-3 rounded-lg text-white transition duration-300 ${transactionType === 'Deposit' ? 'bg-green-600 hover:bg-green-700' :
+                                transactionType === 'Withdrawal' ? 'bg-red-600 hover:bg-red-700' :
+                                    'bg-blue-600 hover:bg-blue-700'
+                            }`}
                         disabled={loading}
                     >
-                        {loading ? 'Processing...' : transactionType}
+                        {loading ? 'Processing...' : `Confirm ${transactionType}`}
                     </button>
 
                     {error && <p className="text-red-500 mt-2">{error}</p>}
