@@ -4,7 +4,7 @@ import useTransaction from '@/hooks/useTransaction';
 
 interface TransactionFormProps {
     transactionType: 'Deposit' | 'Withdrawal' | 'Transfer';
-    setMethod: React.Dispatch<React.SetStateAction<string>>;
+    setMethod: (method: '' | 'Deposit' | 'Withdrawal' | 'Transfer') => void;
 }
 
 const TransactionForm: React.FC<TransactionFormProps> = ({ transactionType, setMethod }) => {
@@ -32,7 +32,6 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ transactionType, setM
                     return;
                 }
                 await transfer({ amount, description, targetIban });
-
             }
         } catch (error) {
             console.error('Transaction error:', error);
@@ -42,11 +41,12 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ transactionType, setM
     return (
         <div className="flex items-center justify-center pt-20">
             <div className="p-10 border rounded-lg shadow-lg max-w-md w-full">
-                <div className='flex justify-between'>  <h2 className="text-xl mb-4 text-center">{transactionType} </h2>
-                    <button onClick={() => setMethod('')} >X</button></div>
+                <div className="flex justify-between">
+                    <h2 className="text-xl mb-4 text-center">{transactionType}</h2>
+                    <button onClick={() => setMethod('')} className="text-red-500">X</button>
+                </div>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
-
                         <label className="block mb-1 text-gray-700">Amount</label>
                         <input
                             type="number"
