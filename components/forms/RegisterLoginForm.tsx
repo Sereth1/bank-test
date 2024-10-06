@@ -4,12 +4,14 @@ import { useModal } from '@/context/ModalProvider';
 import { gsap } from 'gsap';
 import useRegister from '@/hooks/useRegister';
 import useLogin from '@/hooks/useLogin';
+import { useRouter } from 'next/navigation';
+
 
 const RegisterLoginForm = () => {
     const { isModalOpen, activeTab, closeModal, setActiveTab } = useModal();
     const modalRef = useRef<HTMLDivElement>(null);
     const backdropRef = useRef<HTMLDivElement>(null);
-
+    const router = useRouter()
     // Form data state
     const [formData, setFormData] = useState({
         username: '',
@@ -37,7 +39,8 @@ const RegisterLoginForm = () => {
             register(formData);
         } else if (activeTab === 'login') {
             await login(formData.email, formData.password, '');
-            closeModal(); // Close the modal after a successful login
+            router.push('/dashboard');
+            closeModal();
         }
     };
 
@@ -94,7 +97,6 @@ const RegisterLoginForm = () => {
                                 ✕
                             </button>
 
-                            {/* Tabs for Login and Register */}
                             <div className="flex justify-center mb-6">
                                 <button
                                     className={`px-4 py-2 mx-2 ${activeTab === 'login' ? 'border-b-2 border-blue-500' : 'text-gray-500'}`}

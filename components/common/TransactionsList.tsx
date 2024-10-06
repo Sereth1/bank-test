@@ -7,10 +7,16 @@ const TransactionsList = () => {
     const [sortCriteria, setSortCriteria] = useState<string>('created_at');
     const [sortOrder, setSortOrder] = useState<string>('asc');
     const [currentPage, setCurrentPage] = useState<number>(1);
-    const [itemsPerPage, setItemsPerPage] = useState(1)
+    const [itemsPerPage, setItemsPerPage] = useState<number>(10); // Default to 10 items per page
+
+    // Display loading or error messages
     if (loading) return <p>Loading transactions...</p>;
     if (error) return <p>Error: {error}</p>;
 
+    // If data has finished loading and there is no error, render the component
+    if (!transactions || transactions.length === 0) return <p>No transactions found.</p>;
+
+    // Sort transactions
     const sortedTransactions = [...transactions].sort((a, b) => {
         if (sortCriteria === 'amount') {
             return sortOrder === 'asc' ? a.amount - b.amount : b.amount - a.amount;
@@ -26,6 +32,7 @@ const TransactionsList = () => {
         return 0;
     });
 
+    // Calculate total pages
     const totalPages = Math.ceil(sortedTransactions.length / itemsPerPage);
 
     // Get current page transactions
@@ -34,18 +41,15 @@ const TransactionsList = () => {
         currentPage * itemsPerPage
     );
 
-    // Handle next page
-    const nextPage = () => {
-        if (currentPage < totalPages) {
-            setCurrentPage((prev) => prev + 1);
-        }
+    // Handle page selection
+    const handlePageChange = (pageNumber: number) => {
+        setCurrentPage(pageNumber);
     };
 
-    // Handle previous page
-    const prevPage = () => {
-        if (currentPage > 1) {
-            setCurrentPage((prev) => prev - 1);
-        }
+    // Handle items per page change
+    const handleItemsPerPageChange = (value: number) => {
+        setItemsPerPage(value);
+        setCurrentPage(1); // Reset to the first page
     };
 
     return (
@@ -81,10 +85,10 @@ const TransactionsList = () => {
                     <label className="block mb-1">Elements Per Page</label>
                     <select
                         value={itemsPerPage}
-                        onChange={(e) => setItemsPerPage(Number(e.target.value))}
+                        onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
                         className="border rounded p-2"
                     >
-                        {Array.from({ length: 11 }).map((_, i) => (
+                        {Array.from({ length: 10 }, (_, i) => (i + 1) * 5).map((i) => (
                             <option key={i} value={i}>{i}</option>
                         ))}
                     </select>
@@ -104,25 +108,41 @@ const TransactionsList = () => {
             </ul>
 
             {/* Pagination Controls */}
-            <div className="mt-4 flex justify-between">
+            <div className="mt-4 flex justify-center items-center gap-2">
+                {/* Previous Button */}
                 <button
-                    onClick={prevPage}
+                    onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage === 1}
                     className="px-4 py-2 bg-blue-500 text-white rounded disabled:opacity-50"
                 >
                     Previous
                 </button>
-                <p>
-                    Page {currentPage} of {totalPages}
-                </p>
+
+                {/* Page Number Buttons */}
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNumber) => (
+                    <button
+                        key={pageNumber}
+                        onClick={() => handlePageChange(pageNumber)}
+                        className={`px-3 py-1 rounded ${currentPage === pageNumber ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+                    >
+                        {pageNumber}
+                    </button>
+                ))}
+
+                {/* Next Button */}
                 <button
-                    onClick={nextPage}
+                    onClick={() => handlePageChange(currentPage + 1)}
                     disabled={currentPage === totalPages}
                     className="px-4 py-2 bg-blue-500 text-white rounded disabled:opacity-50"
                 >
                     Next
                 </button>
             </div>
+
+            {/* Current Page Info */}
+            <p className="text-center mt-2">
+                Page {currentPage} of {totalPages}
+            </p>
         </div>
     );
 };

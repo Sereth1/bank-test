@@ -1,10 +1,10 @@
+import Header from "@/components/common/Header";
+import RegisterLoginForm from "@/components/forms/RegisterLoginForm";
+import { LoggedInProvider } from "@/context/LoggedInProvider";
+import { ModalProvider } from "@/context/ModalProvider";
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import Header from "@/components/common/Header";
-import { ModalProvider } from "@/context/ModalProvider";
-import RegisterLoginForm from "@/components/forms/RegisterLoginForm";
-import { LoggedInProvider } from "@/context/LoggedInProvider";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -30,8 +30,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
           <ModalProvider>
             <Header />
+
             <RegisterLoginForm />
             {children}
+
           </ModalProvider>
         </LoggedInProvider>
       </body>

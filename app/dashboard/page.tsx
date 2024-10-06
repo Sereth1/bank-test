@@ -3,16 +3,21 @@ import React, { useState } from 'react';
 import TransactionForm from '@/components/forms/TransactionForm';
 import Options from '@/components/dashboard/Options';
 import TransactionsList from '@/components/common/TransactionsList';
+import WelcomeHero from '@/components/common/WelcomeHero';
 
 export default function Page() {
-    // Make sure this type matches everywhere
     const [method, setMethod] = useState<'' | 'Deposit' | 'Withdrawal' | 'Transfer'>('');
     const [isOpen, setIsOpen] = useState<boolean>(false)
     return (
         <div>
-            <Options setMethod={setMethod} setIsOpen={setIsOpen} isOpen={isOpen} />
+            <WelcomeHero />
+            <Options setMethod={setMethod} setIsOpen={setIsOpen} method={method} isOpen={isOpen} />
             {method !== '' && <TransactionForm transactionType={method} setMethod={setMethod} />}
-            {isOpen && <TransactionsList />}
+            {<div className={`${isOpen ? '' : 'hidden'}`}>
+                <TransactionsList />
+
+            </div>}
+
         </div>
     );
 }
