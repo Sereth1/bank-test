@@ -14,52 +14,40 @@ const Header = () => {
     const toggleNav = () => setNavOpen(!navOpen);
 
     return (
-        <header className="fixed top-0 w-full z-50 bg-gradient-to-r pt-10 pl-4 pr-4 md:pl-56 md:pr-56">
+        <header className="fixed top-0 w-full z-50 bg-gradient-to-r from-black to-gray-900 pt-10 px-4 md:px-56">
 
-            <div className="flex items-center justify-between px-4 md:px-8">
-                <Link href='/' className="text-3xl font-semibold text-gray-200">
+            <div className="flex items-center justify-between px-4 md:px-8  bg-opacity-80 pb-5 rounded-lg">
+                <Link href='/' className="text-3xl font-semibold text-white">
                     StarBank
                 </Link>
 
                 {/* Desktop Navigation */}
-                <nav className="hidden md:flex items-center space-x-6 text-gray-300 text-lg ml-10">
+                <nav className="hidden md:flex items-center space-x-6 text-white text-lg ml-10">
                     <Link
                         href="/dashboard"
-                        className="relative px-4 py-2 rounded-full border border-transparent hover:text-white hover:bg-slate-400 hover:border-slate-400 transition duration-300"
+                        className="relative px-4 py-2 rounded-full border border-transparent hover:text-white hover:bg-slate-600 hover:border-slate-600 transition duration-300"
                     >
-                        Dashboard                    </Link>
-                    <Link
-                        href="#business"
-                        className="relative px-4 py-2 rounded-full border border-transparent hover:text-white hover:bg-slate-400 hover:border-slate-400 transition duration-300"
-                    >
-                        Business
+                        Dashboard
                     </Link>
                     <Link
-                        href="#under18"
-                        className="relative px-4 py-2 rounded-full border border-transparent hover:text-white hover:bg-slate-400 hover:border-slate-400 transition duration-300"
+                        href="/ibanFunction"
+                        className="relative px-4 py-2 rounded-full border border-transparent hover:text-white hover:bg-slate-600 hover:border-slate-600 transition duration-300"
                     >
-                        StarBank &lt;18
-                    </Link>
-                    <Link
-                        href="#company"
-                        className="relative px-4 py-2 rounded-full border border-transparent hover:text-white hover:bg-slate-400 hover:border-slate-400 transition duration-300"
-                    >
-                        Company
+                        IbanFunction
                     </Link>
                 </nav>
 
-
                 <div className="hidden md:flex items-center space-x-4 ml-auto pl-10">
-                    <Button label="Log in" variant="secondary" onClick={() => openModal('login')} />
+                    {!user && <Button label="Log in" variant="secondary" onClick={() => openModal('login')} />}
+                    {user !== null && <Button label="Logout" variant="secondary" onClick={() => logOut()} />}
                     <Button label="Sign up" variant="primary" onClick={() => openModal('register')} />
-                    {user !== null && <button className='border p-2 rounded-full' onClick={() => logOut()}>Log Out</button>}
                 </div>
 
-
+                {/* Mobile Menu Button */}
                 <div className="md:hidden">
                     <button
                         onClick={toggleNav}
-                        className="text-gray-200 focus:outline-none"
+                        className="text-white focus:outline-none"
                         aria-label="Toggle navigation menu"
                     >
                         {navOpen ? (
@@ -71,16 +59,14 @@ const Header = () => {
                 </div>
             </div>
 
-            {/* Mobile  */}
+            {/* Mobile Navigation */}
             {navOpen && (
-                <nav className="md:hidden bg-blue-800 text-gray-200 text-lg text-center">
+                <nav className="md:hidden bg-white text-black text-lg text-center fixed top-0 left-0 w-full h-full z-40">
                     <div className="flex flex-col space-y-4 px-6 py-6">
-                        <Link href="#personal" className="hover:text-white" onClick={toggleNav}>Personal</Link>
-                        <Link href="#business" className="hover:text-white" onClick={toggleNav}>Business</Link>
-                        <Link href="#under18" className="hover:text-white" onClick={toggleNav}>StarBank &lt;18</Link>
-                        <Link href="#company" className="hover:text-white" onClick={toggleNav}>Company</Link>
+                        <Link href="/dashboard" className="hover:text-blue-500" onClick={toggleNav}>Dashboard</Link>
+                        <Link href="/ibanFunction" className="hover:text-blue-500" onClick={toggleNav}>IbanFunction</Link>
                         <div className="flex flex-col items-center mt-4 gap-4">
-                            <Button label="Log in" variant="secondary" onClick={() => openModal('login')} />
+                            {!user && <Button label="Log in" variant="secondary" onClick={() => openModal('login')} />}
                             <Button label="Sign up" variant="primary" onClick={() => openModal('register')} />
                             {user !== null && <button className='border rounded p-2' onClick={() => logOut()}>Log Out</button>}
                         </div>
