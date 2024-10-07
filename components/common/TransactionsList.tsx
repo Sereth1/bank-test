@@ -5,24 +5,39 @@ import { useState, useEffect } from 'react';
 const TransactionsList = () => {
     const { transactions, loading, error } = useFetchTransactions();
     const [sortCriteria, setSortCriteria] = useState<string>('created_at');
-    const [sortOrder, setSortOrder] = useState<string>('asc');
+    const [sortOrder, setSortOrder] = useState<string>('desc'); // Default to descending
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [itemsPerPage, setItemsPerPage] = useState<number>(10);
     const [transactionType, setTransactionType] = useState<string>('all');
+    const [startDate, setStartDate] = useState<string>(''); // Start date for date range filter
+    const [endDate, setEndDate] = useState<string>(''); // End date for date range filter
 
+    // Reset to most recent date sorting on filter change
     useEffect(() => {
         setCurrentPage(1);
-    }, [transactionType]);
+        setSortCriteria('created_at');
+        setSortOrder('desc');
+    }, [transactionType, startDate, endDate, transactions]);
 
     if (loading) return <p>Loading transactions...</p>;
     if (error) return <p>Error: {error}</p>;
 
     if (!transactions || transactions.length === 0) return <p>No transactions found.</p>;
 
+    // Filtering transactions by type and date range
     const filteredTransactions = transactions.filter((transaction) => {
-        return transactionType === 'all' || transaction.transaction_type === transactionType;
+        const transactionDate = new Date(transaction.created_at).getTime();
+        const start = startDate ? new Date(startDate).getTime() : null;
+        const end = endDate ? new Date(endDate).getTime() : null;
+
+        return (
+            (transactionType === 'all' || transaction.transaction_type === transactionType) &&
+            (!start || transactionDate >= start) &&
+            (!end || transactionDate <= end)
+        );
     });
 
+    // Sorting transactions
     const sortedTransactions = [...filteredTransactions].sort((a, b) => {
         if (sortCriteria === 'amount') {
             return sortOrder === 'asc' ? a.amount - b.amount : b.amount - a.amount;
@@ -47,6 +62,14 @@ const TransactionsList = () => {
 
     const handleItemsPerPageChange = (value: number) => {
         setItemsPerPage(value);
+        setCurrentPage(1);
+    };
+
+    const handleResetFilters = () => {
+        setTransactionType('all');
+        setStartDate('');
+        setEndDate('');
+        setItemsPerPage(10);
         setCurrentPage(1);
     };
 
@@ -91,6 +114,24 @@ const TransactionsList = () => {
                     </select>
                 </div>
                 <div>
+                    <label className="block mb-1 text-gray-700">Start Date</label>
+                    <input
+                        type="date"
+                        value={startDate}
+                        onChange={(e) => setStartDate(e.target.value)}
+                        className="border rounded-lg p-2 focus:outline-none focus:border-blue-500"
+                    />
+                </div>
+                <div>
+                    <label className="block mb-1 text-gray-700">End Date</label>
+                    <input
+                        type="date"
+                        value={endDate}
+                        onChange={(e) => setEndDate(e.target.value)}
+                        className="border rounded-lg p-2 focus:outline-none focus:border-blue-500"
+                    />
+                </div>
+                <div>
                     <label className="block mb-1 text-gray-700">Elements Per Page</label>
                     <select
                         value={itemsPerPage}
@@ -102,8 +143,15 @@ const TransactionsList = () => {
                         ))}
                     </select>
                 </div>
+                <div>
+                    <button
+                        onClick={handleResetFilters}
+                        className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition duration-300"
+                    >
+                        Reset Filters
+                    </button>
+                </div>
             </div>
-
 
             <ul className="space-y-4">
                 {currentTransactions.map((transaction) => (
@@ -115,7 +163,7 @@ const TransactionsList = () => {
                             </span>
                         </p>
                         <p className="text-gray-800">Description: {transaction.description}</p>
-                        <p className="text-gray-600">Date: {transaction.created_at.slice(0, -5).replace('T', ' ')}</p>
+                        <p className="text-gray-600">Date: {new Date(transaction.created_at).toLocaleString()}</p>
                     </li>
                 ))}
             </ul>
