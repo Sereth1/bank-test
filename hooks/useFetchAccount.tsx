@@ -18,7 +18,6 @@ const useFetchAccount = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    // Access user information from the provider
     const { user } = useLoggedIn();
 
     useEffect(() => {

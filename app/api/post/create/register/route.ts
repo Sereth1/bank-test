@@ -4,13 +4,15 @@ import pool from '@/utils/database';
 import { generateAccountNumber, generateIban, hashPassword } from '@/utilities/generateFunctions';
 
 export async function POST(request: Request) {
-    const connection = await pool.promise().getConnection(); // Use promise-based connection
+    const connection = await pool.promise().getConnection();
     try {
-        // Parse request body
+
         const { username, email, password, name, surname, accountType } = await request.json();
+
 
         const validationError = validateInput({ username, email, password, name, surname, accountType });
         if (validationError) {
+            connection.release();
             return NextResponse.json(
                 { message: validationError },
                 { status: 400 }
@@ -24,7 +26,7 @@ export async function POST(request: Request) {
             [username, email]
         );
 
-        if (!existingAccounts) {
+        if (Array.isArray(existingAccounts) && existingAccounts.length > 0) {
             await connection.rollback();
             connection.release();
             return NextResponse.json(
@@ -33,10 +35,8 @@ export async function POST(request: Request) {
             );
         }
 
-        // Generate unique ID for the account
         const accountId = crypto.randomUUID().replace(/-/g, '').slice(0, 36);
 
-        // Hash the password
         const passwordHash = hashPassword(password);
 
         const finalAccountType = accountType || 'Default';
@@ -69,8 +69,6 @@ export async function POST(request: Request) {
     }
 }
 
-
-
 function validateInput(data: {
     username: string;
     email: string;
@@ -94,14 +92,8 @@ function validateInput(data: {
     if (!data.surname || data.surname.length > 100) {
         return 'Surname is required and must be at most 100 characters';
     }
-    if (!data.accountType || data.accountType.length > 50) {
-        return 'Account type is required and must be at most 50 characters';
+    if (data.accountType && data.accountType.length > 50) {
+        return 'Account type must be at most 50 characters';
     }
     return null;
 }
-
-
-// function validateEmail(email: string): boolean {
-//     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-//     return emailRegex.test(email);
-// }

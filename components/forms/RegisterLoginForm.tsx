@@ -1,29 +1,47 @@
 'use client';
-import React, { useEffect, useRef, useState } from 'react';
 import { useModal } from '@/context/ModalProvider';
-import { gsap } from 'gsap';
-import useRegister from '@/hooks/useRegister';
 import useLogin from '@/hooks/useLogin';
+import useRegister from '@/hooks/useRegister';
+import { animateModal } from '@/gsap/modalAnimation';
+import { sendEmail } from '@/utilities/sendEmail';
 import { useRouter } from 'next/navigation';
-
+import React, { useEffect, useRef, useState } from 'react';
+import toast, { Toaster } from 'react-hot-toast';
 
 const RegisterLoginForm = () => {
     const { isModalOpen, activeTab, closeModal, setActiveTab } = useModal();
     const modalRef = useRef<HTMLDivElement>(null);
     const backdropRef = useRef<HTMLDivElement>(null);
-    const router = useRouter()
-    // Form data state
-    const [formData, setFormData] = useState({
+    const router = useRouter();
+
+    const notify = () => toast.success('Registration Completed');
+    const failedLogin = (error: string) => toast.error(error);
+    const errorNotify = (error: string) => toast.error(error);
+
+    const initialFormData = {
         username: '',
         email: '',
         password: '',
         name: '',
         surname: '',
         accountType: ''
-    });
+    };
 
+    const [formData, setFormData] = useState(initialFormData);
     const { register, loading: registerLoading, error: registerError } = useRegister();
     const { login, loading: loginLoading, error: loginError } = useLogin();
+
+
+    useEffect(() => {
+        if (registerError)
+            errorNotify(registerError);
+
+    }, [registerError]);
+
+    const resetFormData = () => {
+        setFormData(initialFormData);
+    };
+
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         setFormData({
@@ -32,51 +50,44 @@ const RegisterLoginForm = () => {
         });
     };
 
-    // Handle form submission
+
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (activeTab === 'register') {
-            register(formData);
+            const registrationResponse = await register(formData);
+
+            if (registrationResponse.success) {
+                const emailResponse = await sendEmail(formData.email, formData.username);
+                resetFormData();
+                closeModal();
+                notify();
+                if (!emailResponse.success) {
+                    console.error('Failed to send welcome email:', emailResponse.error);
+                }
+            }
         } else if (activeTab === 'login') {
             await login(formData.email, formData.password, '');
-            router.push('/dashboard');
-            closeModal();
+
+            if (!loginError) {
+                resetFormData();
+                router.push('/dashboard');
+                closeModal();
+            } else {
+                failedLogin(loginError || 'Login failed');
+            }
         }
     };
 
     useEffect(() => {
-        if (isModalOpen) {
-            gsap.fromTo(
-                modalRef.current,
-                { y: -100, opacity: 0, scale: 0.8 },
-                { y: 0, opacity: 1, scale: 1, duration: 0.5, ease: 'power3.out' }
-            );
-
-            gsap.fromTo(
-                backdropRef.current,
-                { opacity: 0 },
-                { opacity: 0.5, duration: 0.5, ease: 'power3.out' }
-            );
-        } else {
-            gsap.to(modalRef.current, {
-                y: -100,
-                opacity: 0,
-                scale: 0.8,
-                duration: 0.5,
-                ease: 'power3.in',
-            });
-
-            gsap.to(backdropRef.current, {
-                opacity: 0,
-                duration: 0.5,
-                ease: 'power3.in',
-            });
-        }
+        animateModal(isModalOpen, modalRef, backdropRef);
     }, [isModalOpen]);
+
+
 
     return (
         <div>
-
+            <Toaster position="bottom-right" reverseOrder={false} />
             {isModalOpen && (
                 <>
                     <div
@@ -87,11 +98,11 @@ const RegisterLoginForm = () => {
 
                     <div
                         ref={modalRef}
-                        className="fixed inset-0 flex items-center justify-center z-50"
+                        className="fixed inset-0 flex items-center justify-center z-50 px-4"
                     >
-                        <div className="bg-white w-full max-w-md p-6 rounded shadow-lg relative">
+                        <div className="bg-white w-full max-w-md p-8 rounded-lg shadow-lg relative">
                             <button
-                                className="absolute top-2 right-2 text-gray-500"
+                                className="absolute top-3 right-3 text-black hover:text-gray-800"
                                 onClick={closeModal}
                             >
                                 ✕
@@ -99,65 +110,24 @@ const RegisterLoginForm = () => {
 
                             <div className="flex justify-center mb-6">
                                 <button
-                                    className={`px-4 py-2 mx-2 ${activeTab === 'login' ? 'border-b-2 border-blue-500' : 'text-gray-500'}`}
+                                    className={`px-4 py-2 mx-2 rounded-t-lg ${activeTab === 'login' ? 'border-b-2 border-blue-500 text-black' : 'text-black hover:text-blue-500'
+                                        }`}
                                     onClick={() => setActiveTab('login')}
                                 >
                                     Login
                                 </button>
                                 <button
-                                    className={`px-4 py-2 mx-2 ${activeTab === 'register' ? 'border-b-2 border-blue-500' : 'text-gray-500'}`}
+                                    className={`px-4 py-2 mx-2 rounded-t-lg ${activeTab === 'register' ? 'border-b-2 border-blue-500 text-black' : 'text-black hover:text-blue-500'
+                                        }`}
                                     onClick={() => setActiveTab('register')}
                                 >
                                     Register
                                 </button>
                             </div>
 
-                            {/* Login Form */}
+                            {/* Login */}
                             {activeTab === 'login' && (
                                 <form className="space-y-4" onSubmit={handleSubmit}>
-                                    <div>
-                                        <label className="block mb-1 text-gray-700">Email</label>
-                                        <input
-                                            type="email"
-                                            name="email"
-                                            value={formData.email}
-                                            onChange={handleChange}
-                                            className="w-full border rounded p-2 focus:outline-none focus:border-blue-500"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block mb-1 text-gray-700">Password</label>
-                                        <input
-                                            type="password"
-                                            name="password"
-                                            value={formData.password}
-                                            onChange={handleChange}
-                                            className="w-full border rounded p-2 focus:outline-none focus:border-blue-500"
-                                        />
-                                    </div>
-                                    <button
-                                        type="submit"
-                                        className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition duration-300"
-                                        disabled={loginLoading}
-                                    >
-                                        {loginLoading ? 'Logging in...' : 'Login'}
-                                    </button>
-                                    {loginError && <p className="text-red-500">{loginError}</p>}
-                                </form>
-                            )}
-                            {/* Register Form */}
-                            {activeTab === 'register' && (
-                                <form className="space-y-4" onSubmit={handleSubmit}>
-                                    <div>
-                                        <label className="block mb-1 text-black">Username</label>
-                                        <input
-                                            type="text"
-                                            name="username"
-                                            value={formData.username}
-                                            onChange={handleChange}
-                                            className="w-full border rounded p-2 focus:outline-none text-black focus:border-blue-500"
-                                        />
-                                    </div>
                                     <div>
                                         <label className="block mb-1 text-black">Email</label>
                                         <input
@@ -165,7 +135,8 @@ const RegisterLoginForm = () => {
                                             name="email"
                                             value={formData.email}
                                             onChange={handleChange}
-                                            className="w-full border rounded p-2 focus:outline-none text-black focus:border-blue-500"
+                                            className="w-full border rounded-lg p-3 focus:outline-none focus:border-blue-500 text-black shadow-sm"
+                                            placeholder="Enter your email"
                                         />
                                     </div>
                                     <div>
@@ -175,7 +146,54 @@ const RegisterLoginForm = () => {
                                             name="password"
                                             value={formData.password}
                                             onChange={handleChange}
-                                            className="w-full border rounded p-2 focus:outline-none text-black focus:border-blue-500"
+                                            className="w-full border rounded-lg p-3 focus:outline-none focus:border-blue-500 text-black shadow-sm"
+                                            placeholder="Enter your password"
+                                        />
+                                    </div>
+                                    <button
+                                        type="submit"
+                                        className="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition duration-300 shadow-md"
+                                        disabled={loginLoading}
+                                    >
+                                        {loginLoading ? 'Logging in...' : 'Login'}
+                                    </button>
+                                </form>
+                            )}
+
+                            {/* Register */}
+                            {activeTab === 'register' && (
+                                <form className="space-y-4" onSubmit={handleSubmit}>
+                                    <div>
+                                        <label className="block mb-1 text-black">Username</label>
+                                        <input
+                                            type="text"
+                                            name="username"
+                                            value={formData.username}
+                                            onChange={handleChange}
+                                            className="w-full border rounded-lg p-3 focus:outline-none focus:border-blue-500 text-black shadow-sm"
+                                            placeholder="Choose a username"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block mb-1 text-black">Email</label>
+                                        <input
+                                            type="email"
+                                            name="email"
+                                            value={formData.email}
+                                            onChange={handleChange}
+                                            className="w-full border rounded-lg p-3 focus:outline-none focus:border-blue-500 text-black shadow-sm"
+                                            placeholder="Enter your email"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block mb-1 text-black">Password</label>
+                                        <input
+                                            type="password"
+                                            name="password"
+                                            value={formData.password}
+                                            onChange={handleChange}
+                                            className="w-full border rounded-lg p-3 focus:outline-none focus:border-blue-500 text-black shadow-sm"
+                                            placeholder="Enter a password"
                                         />
                                     </div>
                                     <div>
@@ -185,7 +203,8 @@ const RegisterLoginForm = () => {
                                             name="name"
                                             value={formData.name}
                                             onChange={handleChange}
-                                            className="w-full border rounded p-2 focus:outline-none text-black text-black focus:border-blue-500"
+                                            className="w-full border rounded-lg p-3 focus:outline-none focus:border-blue-500 text-black shadow-sm"
+                                            placeholder="Enter your name"
                                         />
                                     </div>
                                     <div>
@@ -195,7 +214,8 @@ const RegisterLoginForm = () => {
                                             name="surname"
                                             value={formData.surname}
                                             onChange={handleChange}
-                                            className="w-full border rounded p-2 focus:outline-none text-black focus:border-blue-500"
+                                            className="w-full border rounded-lg p-3 focus:outline-none focus:border-blue-500 text-black shadow-sm"
+                                            placeholder="Enter your surname"
                                         />
                                     </div>
                                     <div>
@@ -204,10 +224,11 @@ const RegisterLoginForm = () => {
                                             onChange={handleChange}
                                             name="accountType"
                                             value={formData.accountType}
-                                            className="w-full border rounded p-2 focus:outline-none text-black focus:border-blue-500"
+                                            className="w-full border rounded-lg p-3 focus:outline-none focus:border-blue-500 text-black shadow-sm"
                                         >
-                                            <option value=""></option>
-
+                                            <option value="" disabled>
+                                                Select account type
+                                            </option>
                                             <option value="Investment">Investment</option>
                                             <option value="Business">Business</option>
                                             <option value="Savings">Savings</option>
@@ -216,12 +237,11 @@ const RegisterLoginForm = () => {
                                     </div>
                                     <button
                                         type="submit"
-                                        className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition duration-300"
+                                        className="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition duration-300 shadow-md"
                                         disabled={registerLoading}
                                     >
                                         {registerLoading ? 'Registering...' : 'Register'}
                                     </button>
-                                    {registerError && <p className="text-red-500">{registerError}</p>}
                                 </form>
                             )}
                         </div>
@@ -230,6 +250,6 @@ const RegisterLoginForm = () => {
             )}
         </div>
     );
-};
+}
 
-export default RegisterLoginForm;
+export default RegisterLoginForm

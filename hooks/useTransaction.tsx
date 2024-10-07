@@ -6,7 +6,7 @@ import useFetchAccount from './useFetchAccount';
 interface TransactionProps {
     amount: number;
     description?: string;
-    targetIban?: string; // Updated for transfers
+    targetIban?: string;
 }
 
 const useTransaction = () => {

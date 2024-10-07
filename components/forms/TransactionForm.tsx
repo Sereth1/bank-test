@@ -41,7 +41,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ transactionType, setM
     };
 
     return (
-        <div className="flex items-center justify-center py-20 px-4 bg-gray-50">
+        <div className="flex items-center justify-center py-20 px-4 ">
             <div className="p-8 border rounded-lg shadow-lg max-w-lg w-full bg-white">
                 <div className="flex justify-between items-center mb-6">
                     <h2 className="text-2xl font-semibold text-gray-800">
@@ -99,9 +99,9 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ transactionType, setM
 
                     <button
                         type="submit"
-                        className={`w-full py-3 rounded-lg text-white transition duration-300 ${transactionType === 'Deposit' ? 'bg-green-600 hover:bg-green-700' :
-                                transactionType === 'Withdrawal' ? 'bg-red-600 hover:bg-red-700' :
-                                    'bg-blue-600 hover:bg-blue-700'
+                        className={`w-full py-3 rounded-lg text-white transition duration-300 ${transactionType === 'Deposit' ? 'bg-blue-500 hover:bg-blue-600' :
+                            transactionType === 'Withdrawal' ? 'bg-green-500 hover:bg-green-600' :
+                                'bg-purple-500 hover:bg-blue-600'
                             }`}
                         disabled={loading}
                     >

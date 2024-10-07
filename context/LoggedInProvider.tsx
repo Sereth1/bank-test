@@ -1,4 +1,5 @@
 'use client';
+import { useRouter } from 'next/navigation';
 import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 
 interface User {
@@ -23,7 +24,7 @@ interface LoggedInProviderProps {
 export const LoggedInProvider: React.FC<LoggedInProviderProps> = ({ children }) => {
     const [user, setUser] = useState<User | null>(null);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-
+    const router = useRouter()
     useEffect(() => {
         const storedUser = localStorage.getItem('user');
         if (storedUser) {
@@ -43,6 +44,7 @@ export const LoggedInProvider: React.FC<LoggedInProviderProps> = ({ children }) 
         setUser(null);
         setIsLoggedIn(false);
         localStorage.removeItem('user');
+        router.push('/')
     };
 
     return (

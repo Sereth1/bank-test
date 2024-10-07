@@ -1,4 +1,4 @@
-// utils/database.
+
 
 import mysql from 'mysql2';
 

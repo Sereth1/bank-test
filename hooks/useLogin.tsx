@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import axios from 'axios';
 import { useLoggedIn } from '@/context/LoggedInProvider';
+
 const useLogin = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -15,8 +16,9 @@ const useLogin = () => {
 
             if (response.status === 200) {
                 const { username, email, id } = response.data;
-
                 logIn({ username, email, id });
+
+                return { success: true };
             }
 
             console.log('Login successful:', response.data);
@@ -26,6 +28,8 @@ const useLogin = () => {
             } else {
                 setError('An unexpected error occurred');
             }
+
+            return { success: false, error: err.response?.data.message || 'Login failed' };
         } finally {
             setLoading(false);
         }

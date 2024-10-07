@@ -23,10 +23,8 @@ export async function POST(request: Request) {
 
         const formattedAmount = parseFloat(amount).toFixed(2);
 
-        // Start a transaction
         await connection.beginTransaction();
 
-        // Fetch the sender's account
         const [senderAccounts] = await connection.query(
             'SELECT id, balance FROM accounts WHERE id = ?',
             [accountId]
@@ -44,7 +42,6 @@ export async function POST(request: Request) {
         const senderAccount = senderAccounts[0] as Account;
         let newSenderBalance = parseFloat(senderAccount.balance.toString());
 
-        // Handle Transfer
         if (transactionType === 'Transfer') {
             if (!targetIban) {
                 await connection.rollback();
@@ -72,7 +69,6 @@ export async function POST(request: Request) {
             const recipientAccount = recipientAccounts[0] as Account;
             let newRecipientBalance = parseFloat(recipientAccount.balance.toString());
 
-            // Check if the sender has enough balance
             if (parseFloat(formattedAmount) > newSenderBalance) {
                 await connection.rollback();
                 connection.release();
@@ -82,48 +78,39 @@ export async function POST(request: Request) {
                 );
             }
 
-            // Deduct from sender's balance
             newSenderBalance -= parseFloat(formattedAmount);
 
-            // Add to recipient's balance
             newRecipientBalance += parseFloat(formattedAmount);
 
-            // Update the sender's balance
             await connection.query(
                 'UPDATE accounts SET balance = ? WHERE id = ?',
                 [newSenderBalance.toFixed(2), accountId]
             );
 
-            // Update the recipient's balance
             await connection.query(
                 'UPDATE accounts SET balance = ? WHERE id = ?',
                 [newRecipientBalance.toFixed(2), recipientAccount.id]
             );
 
-            // Insert the transfer transaction
             await connection.query(
                 'INSERT INTO transactions (account_id, transaction_type, amount, counterparty_account_id, description) VALUES (?, ?, ?, ?, ?)',
                 [accountId, transactionType, formattedAmount, recipientAccount.id, description || '']
             );
 
         } else if (transactionType === 'Deposit') {
-            // Handle Deposit
             newSenderBalance += parseFloat(formattedAmount);
 
-            // Update the sender's balance
             await connection.query(
                 'UPDATE accounts SET balance = ? WHERE id = ?',
                 [newSenderBalance.toFixed(2), accountId]
             );
 
-            // Insert the deposit transaction
             await connection.query(
                 'INSERT INTO transactions (account_id, transaction_type, amount, description) VALUES (?, ?, ?, ?)',
                 [accountId, transactionType, formattedAmount, description || '']
             );
 
         } else if (transactionType === 'Withdrawal') {
-            // Handle Withdrawal
             if (parseFloat(formattedAmount) > newSenderBalance) {
                 await connection.rollback();
                 connection.release();
@@ -135,13 +122,11 @@ export async function POST(request: Request) {
 
             newSenderBalance -= parseFloat(formattedAmount);
 
-            // Update the sender's balance
             await connection.query(
                 'UPDATE accounts SET balance = ? WHERE id = ?',
                 [newSenderBalance.toFixed(2), accountId]
             );
 
-            // Insert the withdrawal transaction
             await connection.query(
                 'INSERT INTO transactions (account_id, transaction_type, amount, description) VALUES (?, ?, ?, ?)',
                 [accountId, transactionType, formattedAmount, description || '']
