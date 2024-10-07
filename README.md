@@ -2,7 +2,10 @@
 
 This application is a simple bank transaction app built with Next.js and React. It allows users to register, log in, and perform transactions (deposit, withdrawal, and transfer). The app uses MySQL for database operations and Nodemailer for sending emails.
 
+# If you don't want to register use email : banktest@banktest pw : 6654266542
+
 ## Table of Contents
+
 - [Overview](#overview)
 - [Features](#features)
 - [Technologies Used](#technologies-used)
@@ -14,13 +17,16 @@ This application is a simple bank transaction app built with Next.js and React. 
 - [To-Do and Enhancements](#to-do-and-enhancements)
 
 ## Overview
+
 This application offers a comprehensive system for managing user accounts and transactions. Users can:
+
 - Register and log in.
 - Perform deposits, withdrawals, and transfers.
 - View transaction history.
 - Receive a welcome email upon successful registration.
 
 ## Features
+
 - **User Registration and Authentication:** Users can create an account, log in, and access a personalized dashboard.
 - **Dynamic Transaction Forms:** Users can deposit, withdraw, or transfer funds with real-time feedback.
 - **Toasts:** Real-time notifications for success and error events using `react-hot-toast`.
@@ -30,6 +36,7 @@ This application offers a comprehensive system for managing user accounts and tr
 - **Responsive UI:** The interface is optimized for different screen sizes, ensuring a smooth user experience.
 
 ## Technologies Used
+
 - **[Next.js (App Router)](https://nextjs.org/):** Framework for server-side rendering and static site generation.
 - **[React](https://reactjs.org/):** Frontend library for building user interfaces.
 - **[TypeScript](https://www.typescriptlang.org/):** Enhances JavaScript with static typing.
@@ -43,7 +50,9 @@ This application offers a comprehensive system for managing user accounts and tr
 - **[React Icons](https://react-icons.github.io/react-icons/):** For incorporating icons into the UI.
 
 ## Project Setup
+
 To run this project locally:
+
 1. Clone the repository.
 2. Install the dependencies:
 3. npm install
