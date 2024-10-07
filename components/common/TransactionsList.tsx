@@ -24,7 +24,6 @@ const TransactionsList = () => {
 
     if (!transactions || transactions.length === 0) return <p>No transactions found.</p>;
 
-    // Filtering transactions by type and date range
     const filteredTransactions = transactions.filter((transaction) => {
         const transactionDate = new Date(transaction.created_at).getTime();
         const start = startDate ? new Date(startDate).getTime() : null;
@@ -37,7 +36,6 @@ const TransactionsList = () => {
         );
     });
 
-    // Sorting transactions
     const sortedTransactions = [...filteredTransactions].sort((a, b) => {
         if (sortCriteria === 'amount') {
             return sortOrder === 'asc' ? a.amount - b.amount : b.amount - a.amount;
