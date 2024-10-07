@@ -10,7 +10,7 @@ interface TransactionFormProps {
 }
 
 const TransactionForm: React.FC<TransactionFormProps> = ({ transactionType, setMethod }) => {
-    const [amount, setAmount] = useState<number>(0);
+    const [amount, setAmount] = useState<string>('');
     const [description, setDescription] = useState<string>('');
     const [targetIban, setTargetIban] = useState<string>('');
     const { deposit, withdraw, transfer, loading, error, successMessage } = useTransaction();
@@ -18,22 +18,24 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ transactionType, setM
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (amount <= 0) {
+        const numericAmount = Number(amount);
+
+        if (numericAmount <= 0) {
             alert('Please enter a valid amount.');
             return;
         }
 
         try {
             if (transactionType === 'Deposit') {
-                await deposit({ amount, description });
+                await deposit({ amount: numericAmount, description });
             } else if (transactionType === 'Withdrawal') {
-                await withdraw({ amount, description });
+                await withdraw({ amount: numericAmount, description });
             } else if (transactionType === 'Transfer') {
                 if (!targetIban) {
                     alert('Please enter a valid target IBAN for transfer.');
                     return;
                 }
-                await transfer({ amount, description, targetIban });
+                await transfer({ amount: numericAmount, description, targetIban });
             }
         } catch (error) {
             console.error('Transaction error:', error);
@@ -61,7 +63,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ transactionType, setM
                             type="number"
                             name="amount"
                             value={amount}
-                            onChange={(e) => setAmount(Number(e.target.value))}
+                            onChange={(e) => setAmount(e.target.value)}
                             className="w-full border rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-300"
                             placeholder="Enter amount"
                             required
