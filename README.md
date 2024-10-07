@@ -46,9 +46,9 @@ This application offers a comprehensive system for managing user accounts and tr
 To run this project locally:
 1. Clone the repository.
 2. Install the dependencies:
-3.npm install
-4.npm run dev
-5.If the .env file doesn't exist, create one in the root directory of your project and add the following environment variables:
+3. npm install
+4. npm run dev
+5. If the .env file doesn't exist, create one in the root directory of your project and add the following environment variables:
 
 - EMAIL_PORT=587
 - EMAIL_USER=starbanktest@gmail.com
