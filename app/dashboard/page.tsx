@@ -22,7 +22,7 @@ export default function Page() {
 
 
     }, [])
-    console.log(`we have a ${user?.username}`);
+
 
     return (
         <div className=''>
