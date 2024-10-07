@@ -49,12 +49,11 @@ To run this project locally:
 3.npm install
 4.npm run dev
 5.If the .env file doesn't exist, create one in the root directory of your project and add the following environment variables:
--EMAIL_PORT=587
--EMAIL_USER=starbanktest@gmail.com
--EMAIL_PASS=imcw xckn nomj rfii
-
--NEXT_PUBLIC_BASE_URL=http://localhost:3000
--SQL_HOST=202.61.224.164
--SQL_USER=n1ghtw0olf
--SQL_PASS=t3r4st10s
--SQL_DB=banking_app
+[EMAIL_PORT=587
+EMAIL_USER=starbanktest@gmail.com
+EMAIL_PASS=imcw xckn nomj rfii
+NEXT_PUBLIC_BASE_URL=http://localhost:3000
+SQL_HOST=202.61.224.164
+SQL_USER=n1ghtw0olf
+SQL_PASS=t3r4st10s
+SQL_DB=banking_app]
