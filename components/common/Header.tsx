@@ -12,11 +12,11 @@ const Header = () => {
     const { user, logOut } = useLoggedIn();
 
     const toggleNav = () => setNavOpen(!navOpen);
+    const closeNav = () => setNavOpen(false);
 
     return (
         <header className="fixed top-0 w-full z-50 bg-gradient-to-r from-black to-gray-900 pt-10 px-4 md:px-56">
-
-            <div className="flex items-center justify-between px-4 md:px-8  bg-opacity-80 pb-5 rounded-lg">
+            <div className="flex items-center justify-between px-4 md:px-8 bg-opacity-80 pb-5 rounded-lg">
                 <Link href='/' className="text-3xl font-semibold text-white">
                     StarBank
                 </Link>
@@ -61,17 +61,31 @@ const Header = () => {
 
             {/* Mobile Navigation */}
             {navOpen && (
-                <nav className="md:hidden bg-white text-black text-lg text-center fixed top-0 left-0 w-full h-full z-40">
-                    <div className="flex flex-col space-y-4 px-6 py-6">
-                        <Link href="/dashboard" className="hover:text-blue-500" onClick={toggleNav}>Dashboard</Link>
-                        <Link href="/ibanFunction" className="hover:text-blue-500" onClick={toggleNav}>IbanFunction</Link>
-                        <div className="flex flex-col items-center mt-4 gap-4">
-                            {!user && <Button label="Log in" variant="secondary" onClick={() => openModal('login')} />}
-                            <Button label="Sign up" variant="primary" onClick={() => openModal('register')} />
-                            {user !== null && <button className='border rounded p-2' onClick={() => logOut()}>Log Out</button>}
+                <>
+                    <div
+                        className="fixed inset-0 bg-black bg-opacity-50 z-30"
+                        onClick={closeNav}
+                    ></div>
+
+                    <nav className="md:hidden bg-black text-white text-lg text-center fixed top-0 left-0 w-full  z-40">
+                        <div className="flex flex-col space-y-4 px-4 py-4">
+                            <button
+                                className="text-white absolute top-4 right-4"
+                                onClick={closeNav}
+                                aria-label="Close navigation menu"
+                            >
+                                <XIcon className="h-6 w-6" />
+                            </button>
+                            <Link href="/dashboard" className="hover:text-blue-500" onClick={closeNav}>Dashboard</Link>
+                            <Link href="/ibanFunction" className="hover:text-blue-500" onClick={closeNav}>IbanFunction</Link>
+                            <div className="flex flex-col items-center mt-4 gap-4">
+                                {!user && <Button label="Log in" variant="secondary" onClick={() => { openModal('login'); closeNav(); }} />}
+                                <Button label="Sign up" variant="primary" onClick={() => { openModal('register'); closeNav(); }} />
+                                {user !== null && <button className='border rounded p-2' onClick={() => { logOut(); closeNav(); }}>Log Out</button>}
+                            </div>
                         </div>
-                    </div>
-                </nav>
+                    </nav>
+                </>
             )}
         </header>
     );
