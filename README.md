@@ -2,7 +2,9 @@
 
 This application is a simple bank transaction app built with Next.js and React. It allows users to register, log in, and perform transactions (deposit, withdrawal, and transfer). The app uses MySQL for database operations and Nodemailer for sending emails.
 
+# Url:https://bank-test-mu.vercel.app/
 # If you don't want to register use email : banktest@banktest pw : 6654266542
+
 
 ## Table of Contents
 
