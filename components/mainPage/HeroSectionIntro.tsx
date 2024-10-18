@@ -3,6 +3,8 @@ import { animateHeroSection } from '@/gsap/animateHeroSection';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useEffect, useRef, useState } from 'react';
+import Button from '../common/Button';
+import { useModal } from '@/context/ModalProvider';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -12,7 +14,7 @@ const HeroSection = () => {
     const buttonRef = useRef(null);
     const whiteBgRef = useRef(null);
     const newTextRef = useRef(null);
-
+    const { openModal } = useModal();
     const [hasScrolled, setHasScrolled] = useState(false);
 
     useEffect(() => {
@@ -49,12 +51,7 @@ const HeroSection = () => {
 
 
                 {hasScrolled && (
-                    <button
-                        ref={buttonRef}
-                        className="bg-black text-white px-8 py-3 rounded-full hover:bg-gray-700 transition duration-300"
-                    >
-                        Get the app
-                    </button>
+                    <Button label="Sign up" variant="primary" onClick={() => openModal('register')} />
                 )}
             </div>
 
