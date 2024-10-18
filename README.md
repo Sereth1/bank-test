@@ -67,5 +67,5 @@ To run this project locally:
 - NEXT_PUBLIC_BASE_URL=http://localhost:3000
 - SQL_HOST=202.61.224.164
 - SQL_USER=n1ghtw0olf
-- SQL_PASS=t3r4st10s
+- SQL_PASS=H3g7!Zp9Qw2L
 - SQL_DB=banking_app
